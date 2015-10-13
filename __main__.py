@@ -24,7 +24,7 @@ def main():
                 i = 0
                 percent += 1
                 time.sleep(1)
-                sys.stdout.write("\r%d%%" % percent)
+                sys.stdout.write(("\rAnalysing in process: ["+("="*percent)+"] %d"%percent+"%"))
                 sys.stdout.flush()
             i += 1
 
