@@ -29,18 +29,6 @@ def main():
             i += 1
 
 
-def cmp_vsize_rsize(full_path_to_pe):
-    result  = 0
-    if full_path_to_pe == 0:
-        print_msg(-1, "Specified file in't exist!")
-    pe_file = pefile.PE(full_path_to_pe)
-    if pe_file.is_exe() or pe_file.is_dll() or pe_file.is_driver():
-        for section in pe_file.sections:
-            if (section.Misc_VirtualSize == section.SizeOfRawData) and (".rsrc" in section.Name):
-                result = 1
-    return result
-
-
 def print_msg(code, msg):
     if code == -1:
         print "[ERROR]\t"+msg
