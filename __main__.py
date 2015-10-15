@@ -3,12 +3,12 @@
 import pefile
 import sys
 import os
+from colors import red, green
 
 
 def main():
 
     path = sys.argv[1]
-
     if path == 0:
         usage(sys.argv[0])
         exit()
@@ -20,16 +20,21 @@ def main():
         if os.path.isfile(os.path.join(path, pe_file)):
             if is_pe_file(os.path.join(path, pe_file)):
                 sys.stdout.write("\nFile: " + pe_file + "\n")
-                print_sections(os.path.join(path, pe_file))
+                print_eq_sections(os.path.join(path, pe_file), False)
                 i += 1
 
 
-def print_sections(in_file):
+def print_eq_sections(in_file, flag):
     sample = pefile.PE(in_file)
-
     for section in sample.sections:
-        sys.stdout.write("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData)
-        sys.stdout.write("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize + "\n")
+        if section.Misc_VirtualSize == section.SizeOfRawData:
+            sys.stdout.write(red("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData))
+            sys.stdout.write(red("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize))
+            sys.stdout.write(red("\tEntropy = %02d" % section.get_entropy() + "\n"))
+        elif flag == True:
+            sys.stdout.write(green("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData))
+            sys.stdout.write(green("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize))
+            sys.stdout.write(green("\tEntropy = %02d" % section.get_entropy() + "\n"))
 
 
 def is_pe_file(in_file):
