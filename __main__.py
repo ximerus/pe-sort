@@ -20,7 +20,7 @@ def main():
         if os.path.isfile(os.path.join(path, pe_file)):
             if is_pe_file(os.path.join(path, pe_file)):
                 sys.stdout.write("\nFile: " + pe_file + "\n")
-                print_eq_sections(os.path.join(path, pe_file), False)
+                print_eq_sections(os.path.join(path, pe_file), True)
                 i += 1
 
 
