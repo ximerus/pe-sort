@@ -3,7 +3,8 @@
 import pefile
 import sys
 import os
-from colors import red, green
+from colors import red, green, yellow, blue, magenta, cyan
+import time
 
 
 def main():
@@ -15,26 +16,35 @@ def main():
 
     files_count = len([name for name in os.listdir(path) if os.path.isfile(os.path.join(path, name))])
     sys.stdout.write("Total files in dir: %s\n" % str(files_count))
-    i = 0
     for pe_file in os.listdir(path):
         if os.path.isfile(os.path.join(path, pe_file)):
+            sys.stdout.write(cyan(("\nFile: " + pe_file + "\n")))
             if is_pe_file(os.path.join(path, pe_file)):
-                sys.stdout.write("\nFile: " + pe_file + "\n")
-                print_eq_sections(os.path.join(path, pe_file), True)
-                i += 1
+                print_eq_sections(os.path.join(path, pe_file), True, ".rsrc")
+            else:
+                print_msg(1, "File is not valid PE")
+                time.sleep(2)
 
 
-def print_eq_sections(in_file, flag):
+
+def print_eq_sections(in_file, flag=True, section_name=""):
+    if not in_file:
+        print_msg(-1, "File is't exist")
+        return
+
     sample = pefile.PE(in_file)
     for section in sample.sections:
-        if section.Misc_VirtualSize == section.SizeOfRawData:
-            sys.stdout.write(red("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData))
-            sys.stdout.write(red("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize))
-            sys.stdout.write(red("\tEntropy = %02d" % section.get_entropy() + "\n"))
+        if (section.Misc_VirtualSize == section.SizeOfRawData) and (section_name in section.Name):
+            sys.stdout.write(magenta("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData))
+            sys.stdout.write(magenta("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize))
+            sys.stdout.write(magenta("\tEntropy = %02d" % section.get_entropy() + "\n"))
+        elif flag == False:
+            print_msg(1, "No sections with equal RSize and VSize")
         elif flag == True:
-            sys.stdout.write(green("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData))
-            sys.stdout.write(green("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize))
-            sys.stdout.write(green("\tEntropy = %02d" % section.get_entropy() + "\n"))
+            sys.stdout.write(blue("Name: %0s" % section.Name + "\tRawSize = 0x%08x" % section.SizeOfRawData))
+            sys.stdout.write(blue("\tVirtualSize = 0x%08x" % section.Misc_VirtualSize))
+            sys.stdout.write(blue("\tEntropy = %02d" % section.get_entropy() + "\n"))
+
 
 
 def is_pe_file(in_file):
@@ -48,9 +58,11 @@ def is_pe_file(in_file):
 
 def print_msg(code, msg):
     if code == -1:
-        print "[ERROR]\t" + msg
+        print red("[ERROR]\t" + msg)
+    elif code == 1:
+        print yellow("[WARNING]\t"+msg)
     else:
-        print "[INFO]\t" + msg
+        print green("[INFO]\t" + msg)
 
 
 def usage(module_name):
