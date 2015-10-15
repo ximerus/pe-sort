@@ -20,7 +20,7 @@ def main():
         if os.path.isfile(os.path.join(path, pe_file)):
             sys.stdout.write(cyan(("\nFile: " + pe_file + "\n")))
             if is_pe_file(os.path.join(path, pe_file)):
-                print_eq_sections(os.path.join(path, pe_file), True, ".rsrc")
+                print_eq_sections(os.path.join(path, pe_file), True)
             else:
                 print_msg(1, "File is not valid PE")
                 time.sleep(2)
